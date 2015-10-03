@@ -18,8 +18,26 @@
 var favicon = require('serve-favicon');
 var api = require('./routes/api');
 var express = require('express');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+
+var credentials =(require ('fs').existsSync ('credentials.js') ?
+    require('./credentials')
+  : (console.log ('No credentials.js file present, assuming using CONSUMERKEY & CONSUMERSECRET system variables.'), require('./credentials_'))) ;
+
 
 var app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+/**
+ * Connect to MongoDB.
+ */
+mongoose.connect(credentials.db);
+mongoose.connection.on('error', function() {
+  console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
+});
 
 app.use('/', express.static(__dirname + '/www'));
 app.use(favicon(__dirname + '/www/images/favicon.ico'));

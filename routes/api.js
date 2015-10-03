@@ -20,6 +20,7 @@ var credentials =(require ('fs').existsSync ('credentials.js') ?
 	: (console.log ('No credentials.js file present, assuming using CONSUMERKEY & CONSUMERSECRET system variables.'), require('../credentials_'))) ;
 var express =require ('express') ;
 var request =require ('request') ;
+var sensorController = require('../controllers/sensorCtl');
 
 var router =express.Router () ;
 
@@ -35,5 +36,30 @@ router.get ('/token', function (req, res) {
                 res.send (body) ;
         }) ;
 }) ;
+
+
+
+
+router.route('/sensors')
+  .get(sensorController.getAllSensors)
+  .post(sensorController.createNewSensor);
+
+router.route('/sensors/:sensorId')
+  .get(sensorController.getSensor)
+  .put(sensorController.updateSensor)
+  .delete(function(req,res){
+
+  });
+
+router.route('/sensors/:sensorId/values')
+  .get(sensorController.getSensorValues)
+  .put(sensorController.appendSensorValues);
+
+router.route('/sensors/:sensorId/values/last')
+  .get(sensorController.getSensorLastValue)
+
+router.route('/sensors/:sensorId/values/:count')
+  .get(sensorController.getSensorLastNValues)
+  
 
 module.exports =router ;
