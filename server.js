@@ -20,11 +20,7 @@ var api = require('./routes/api');
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-
-var credentials =(require ('fs').existsSync ('credentials.js') ?
-    require('./credentials')
-  : (console.log ('No credentials.js file present, assuming using CONSUMERKEY & CONSUMERSECRET system variables.'), require('./credentials_'))) ;
-
+var dbconfig = require('./config/dbconfig');
 
 var app = express();
 
@@ -34,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /**
  * Connect to MongoDB.
  */
-mongoose.connect(credentials.db);
+mongoose.connect(dbconfig.db);
 mongoose.connection.on('error', function() {
   console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
 });
