@@ -156,7 +156,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
   var gernerateTempChart = function(){
 
     //get last 10 temperature items
-    var url = 'http://localhost:3000/api/sensors/5604fc3142d643054948c3fe/values/10';
+    var url = 'http://localhost:3000/api/sensors/561083be06dd6162658ae8c8/values/10';
 
     $.getJSON(url, function(data){
 
@@ -178,16 +178,6 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
                 pointStrokeColor : "#fff",
                 pointHighlightFill : "#fff",
                 pointHighlightStroke : "rgba(220,220,220,1)",
-                data : []
-              },
-              {
-                label: "My Second dataset",
-                fillColor : "rgba(151,187,205,0.2)",
-                strokeColor : "rgba(151,187,205,1)",
-                pointColor : "rgba(151,187,205,1)",
-                pointStrokeColor : "#fff",
-                pointHighlightFill : "#fff",
-                pointHighlightStroke : "rgba(151,187,205,1)",
                 data : []
               }
             ]

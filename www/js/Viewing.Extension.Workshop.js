@@ -139,7 +139,7 @@ Viewing.Extension.Workshop = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.GetLastTemperature = function(onSuccess) {
 
-        var url = '/api/sensors/5604fc3142d643054948c3fe/values/last' ;
+        var url = '/api/sensors/561083be06dd6162658ae8c8/values/last' ;
             
 
 
