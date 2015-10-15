@@ -82,6 +82,27 @@ Viewing.Extension.Workshop = function (viewer, options) {
         if (result.properties) {
           _self.panel.setProperties(
             result.properties);
+
+
+
+         _self.GetLastTemperature(function(response){
+
+                _self.panel.addProperty(
+                    'temperature', //title
+                    response.temperatureItem.temperature + ' ℃', //value,
+                    'Current Temperature' //group name
+                  );
+
+                _self.panel.addProperty(
+                    'temp trend', //title
+                    'http://www.baidu.com', //value,
+                    'Current Temperature'
+                  );
+
+       
+              })
+
+
           _self.panel.setVisible(true);
         }
       }
@@ -97,17 +118,39 @@ Viewing.Extension.Workshop = function (viewer, options) {
         _viewer.fitToView(dbId);
         _viewer.isolate(dbId);
 
-        _self.startRotation();
+        //_self.startRotation();
       }
       else {
 
-		clearInterval(_self.interval);
+		    //clearInterval(_self.interval);
 
         _viewer.isolate([]);
         _viewer.fitToView();
         _self.panel.setVisible(false);
       }
 
+    }
+
+
+
+ ///////////////////////////////////////////////////////////////////////////
+    // get stock market quotes from Yahoo
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    _self.GetLastTemperature = function(onSuccess) {
+
+        var url = '/api/sensors/5604fc3142d643054948c3fe/values/last' ;
+            
+
+
+        $.getJSON(url, function(data){
+
+            var response = {
+                temperatureItem : data
+            }
+
+            onSuccess(response);
+        });
     }
 
 

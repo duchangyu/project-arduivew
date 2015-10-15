@@ -20,6 +20,7 @@ var defaultUrn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bW9kZWwyMDE1LTA2LTA5LTA5LT
 $(document).ready(function () {
     var tokenurl = 'http://' + window.location.host + '/api/token';
     var config = {
+        language : 'zh-cn',
         environment : 'AutodeskProduction'
 		//environment : 'AutodeskStaging'
     };
@@ -61,6 +62,18 @@ $(document).ready(function () {
 
 function loadExtensions(viewer) {
         viewer.loadExtension('Viewing.Extension.Workshop');
+
+        var dockingPanelOptions = {
+          
+        };
+        viewer.loadExtension('Autodesk.ADN.Viewing.Extension.GenericDockingPanel',dockingPanelOptions);
+        
+
+        // //build option 
+        // var options = {};
+        // // load the PropertyPanel extension
+        // viewer.loadExtension('Autodesk.ADN.Viewing.Extension.PropertyPanel',options);
+
     }
 
 
@@ -112,7 +125,8 @@ function onError(error) {
                var options = {
                    env: "AutodeskProduction",
                    getAccessToken: getToken,
-                   refreshToken: getToken
+                   refreshToken: getToken,
+                   language : 'zh-HANS' //Simplified Chinese
                };
 
                 // Allows different urn to be passed as url parameter
