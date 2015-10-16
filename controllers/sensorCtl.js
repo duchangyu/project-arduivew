@@ -134,7 +134,13 @@ exports.appendSensorValues = function(req,res){  //append
       if(err)
         res.json(err);
 
-      sensor.values = sensor.values.concat(req.body.values);
+      var sensorValueItem = {};
+      sensorValueItem.timestamp = new Date().getTime();
+      sensorValueItem.value = req.body.value;
+
+      //console.log(sensorValueItem);
+
+      sensor.values = sensor.values.concat(sensorValueItem);
     
 
       sensor.save(function(err){
