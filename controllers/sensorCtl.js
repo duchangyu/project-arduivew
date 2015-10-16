@@ -148,7 +148,7 @@ exports.appendSensorValues = function(req,res){  //append
         if(err)
           res.send(err);
 
-        res.json(sensor.values);
+        res.json(sensorValueItem);
 
 
 
