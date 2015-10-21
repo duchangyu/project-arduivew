@@ -1,3 +1,7 @@
+#include <Adafruit_CC3000.h>
+#include <Adafruit_CC3000_Server.h>
+#include <ccspi.h>
+
 /***************************************************
  * This is an example for the DFRobot Wido - Wifi Integrated IoT lite sensor and control node
  * Product Page & More info: http://www.dfrobot.com.cn/goods-997.html
@@ -40,8 +44,8 @@ Adafruit_CC3000 Wido = Adafruit_CC3000(Wido_CS, Wido_IRQ, Wido_VBAT,
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
 
-#define WLAN_SSID       "242"           // cannot be longer than 32 characters!
-#define WLAN_PASS       "4659875admin"          // For connecting router or AP, don't forget to set the SSID and password here!!
+#define WLAN_SSID       "xiaomi"           // cannot be longer than 32 characters!
+#define WLAN_PASS       "18600503761"          // For connecting router or AP, don't forget to set the SSID and password here!!
 
 #define DEVICE_ID       "561083be06dd6162658ae8c8"  //arduiview device id
 
@@ -51,54 +55,32 @@ Adafruit_CC3000 Wido = Adafruit_CC3000(Wido_CS, Wido_IRQ, Wido_VBAT,
 
 #define WEBSITE  "arduiview.herokuapp.com"
 
-void setup() {
-
-  Serial.begin(115200);
-  Serial.println(F("Hello, CC3000!\n"));
-
-  /* Initialise the module */
-  Serial.println(F("\nInitialising the CC3000 ..."));
-  if (!Wido.begin())
-  {
-    Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
-    while (1);
-  }
-
-  /* Attempt to connect to an access point */
-  char *ssid = WLAN_SSID;             /* Max 32 chars */
-  Serial.print(F("\nAttempting to connect to "));
-  Serial.println(ssid);
-
-  /* NOTE: Secure connections are not available in 'Tiny' mode!
-   By default connectToAP will retry indefinitely, however you can pass an
-   optional maximum number of retries (greater than zero) as the fourth parameter.
-   */
-  if (!Wido.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
-    Serial.println(F("Failed!"));
-    while (1);
-  }
-
-  Serial.println(F("Connected!"));
-
-  /* Wait for DHCP to complete */
-  Serial.println(F("Request DHCP"));
-  while (!Wido.checkDHCP())
-  {
-    delay(1000); // ToDo: Insert a DHCP timeout!
-  }
-
-}
 
 uint32_t ip = 0;
 float temp = 0;
 
+
+static Adafruit_CC3000_Client WidoClient;
+static unsigned long RetryMillis = 0;
+static unsigned long uploadtStamp = 0;
+static unsigned long sensortStamp = 0;
+
+
+void setup() {
+
+  Serial.begin(115200);
+
+  initWifiConnection();
+
+}
+
+
 void loop() {
 
-  static Adafruit_CC3000_Client WidoClient;
-  static unsigned long RetryMillis = 0;
-  static unsigned long uploadtStamp = 0;
-  static unsigned long sensortStamp = 0;
 
+
+
+  // ======= build the connectioin =========
   if (!WidoClient.connected() && millis() - RetryMillis > TCP_TIMEOUT) {
     // Update the time stamp
     RetryMillis = millis();
@@ -112,18 +94,26 @@ void loop() {
       if  (!Wido.getHostByName(WEBSITE, &ip))  {    //  Get the server IP address based on the domain name
         Serial.println(F("Couldn't resolve!"));
       }
+      Serial.println(F("resolved IP failed, retrying...."));
       delay(500);
+
     }
     Wido.printIPdotsRev(ip);
-    Serial.println(F(""));
+    Serial.println(F(" IP resolved."));
 
     // Connect to the aruduiview Server
     WidoClient = Wido.connectTCP(ip, 80);          // Try to connect cloud server
+
+    Serial.println(F("connected."));
   }
 
-  if (WidoClient.connected() && millis() - uploadtStamp > 2000) {
+
+  //===========Upload data ========
+  if (WidoClient.connected() && millis() - uploadtStamp > 2000) {   //upload every 2s
     uploadtStamp = millis();
     // If the device is connected to the cloud server, upload the data every 2000ms.
+
+    Serial.println(F("Begin uploading...."));
 
     // Prepare Http Package for Yeelink & get length
     int length = 0;
@@ -132,26 +122,25 @@ void loop() {
     // Create Http data package
     char httpPackage[] = "";
 
-    strcat(httpPackage , "{\"values\":[");
-    strcat(httpPackage , "{\"timestamp\" : ");
-    //convert long to char array
-    char sTimeStamp[] = "";
-    sprintf(sTimeStamp,"%d",uploadtStamp);
-    strcat(httpPackage , sTimeStamp);
-    strcat(httpPackage , ",");
-    strcat(httpPackage , "\"temperature\" : ");
+    strcat(httpPackage , "{\"value\": \"");
+
+    //get temperature from sensor
+    int reading = analogRead(0);
+    temp = reading * 0.0048828125 * 100;
+    Serial.print(F("Real Time Temp: "));
+    Serial.println(temp);
+
     char sTemp[] = "";
-    printf(sTemp,"%f",temp);
+    //convert float to char*, 
+     //dtostrf(temp,2,2, sTemp); //val, integer part width, precise, result char array 
+    itoa(temp, sTemp, 10);
     strcat(httpPackage , sTemp);    // push the data(temp) to the http data package
-    strcat(httpPackage , "}");
-    strcat(httpPackage , "]}");
+    strcat(httpPackage , "\" }");
 
     length = strlen(httpPackage);                           // get the length of data package
     itoa(length, lengthstr, 10);                            // convert int to char array for posting
-    Serial.print(F("Length = "));
-    Serial.println(length);
-
-    Serial.println(F("Connected to arduiview server."));
+    //Serial.print(F("Length = "));
+    //Serial.println(length);
 
     // Send headers
     Serial.print(F("Sending headers"));
@@ -161,9 +150,6 @@ void loop() {
     WidoClient.fastrprint(deviceId);
     WidoClient.fastrprint(F("/values"));
 
-    //Please change your device ID and sensor ID here, after creating
-    //Please check the link: http://www.yeelink.net/user/devices
-    //The example URL: http://api.yeelink.net/v1.1/device/100/sensor/20/datapoints
     WidoClient.fastrprintln(F(" HTTP/1.1"));
     Serial.print(F("."));
 
@@ -188,10 +174,10 @@ void loop() {
     //strcat(payload,httpPackage);
     WidoClient.fastrprintln(httpPackage);
 
-    Serial.println(F("-----"));
-    Serial.println(httpPackage);
-    Serial.println(F("-----"));
-  
+    //Serial.println(F("-----"));
+    //Serial.println(httpPackage);
+    //Serial.println(F("-----"));
+
     Serial.println(F(" done."));
 
     /********** Get the http page feedback ***********/
@@ -210,15 +196,62 @@ void loop() {
     RetryMillis = millis();  // Reset the timer stamp for applying the connection with the service
   }
 
-  if (millis() - sensortStamp > 100) {
-    sensortStamp = millis();
-    // read the LM35 sensor value and convert to the degrees every 100ms.
 
-    int reading = analogRead(0);
-    temp = reading * 0.0048828125 * 100;
-    Serial.print(F("Real Time Temp: "));
-    Serial.println(temp);
-  }
+  //  //read temperature every 0.1 seconds
+  //  if (millis() - sensortStamp > 100) {
+  //    sensortStamp = millis();
+  //    // read the LM35 sensor value and convert to the degrees every 100ms.
+  //
+  //    int reading = analogRead(0);
+  //    temp = reading * 0.0048828125 * 100;
+  //    Serial.print(F("Real Time Temp: "));
+  //    Serial.println(temp);
+  //  }
 }
+
+
+
+void initWifiConnection() {
+
+  /* Initialise the module */
+  Serial.println(F("\nInitialising the CC3000 ..."));
+  if (!Wido.begin())
+  {
+    Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
+    while (1);
+  }
+
+  /* Attempt to connect to an access point */
+  char *ssid = WLAN_SSID;             /* Max 32 chars */
+  Serial.print(F("\nAttempting to connect to "));
+  Serial.println(ssid);
+
+  /* NOTE: Secure connections are not available in 'Tiny' mode!
+   By default connectToAP will retry indefinitely, however you can pass an
+   optional maximum number of retries (greater than zero) as the fourth parameter.
+   */
+  if (!Wido.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
+    Serial.println(F("Failed!"));
+    while (1);
+  }
+
+  Serial.println(F("Connected to WIFI!"));
+
+  /* Wait for DHCP to complete */
+  Serial.println(F("Request DHCP"));
+  while (!Wido.checkDHCP())
+  {
+    delay(1000); // ToDo: Insert a DHCP timeout!
+  }
+
+
+}
+
+
+
+
+
+
+
 
 
