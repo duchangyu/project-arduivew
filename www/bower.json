@@ -1,0 +1,20 @@
+{
+  "name": "www",
+  "version": "0.0.0",
+  "authors": [
+    "Daniel Du <duchangyu@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Chart.js": "~1.0.2",
+    "bootstrap": "~3.3.5",
+    "raphael": "2.1.0"
+  }
+}
