@@ -91,7 +91,9 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     $(_thisPanel.container).append(html.join('\n'));
 
 
-    gernerateTempChart();
+    setTimeout(gernerateTempChart, 1000);
+
+    //gernerateTempChart();
 
 
 
