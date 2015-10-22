@@ -157,20 +157,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
   ////////////////////////////////////
   var gernerateTempChart = function(){
 
-    var lineChartData;
-    var updateData = function(lineChartData){
-
-      //get last 10 temperature items
-      var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
-
-      $.getJSON(url, function(data){
-
-        //sort by timestamp
-        data.sort(function(a,b){
-            return parseInt(a.timeStamp) - parseInt(b.timeStamp);
-        });
-
-        lineChartData = {
+    var lineChartData = {
           labels : [],
           datasets : [
             {
@@ -186,6 +173,19 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           ]
         }
 
+    var updateData = function(lineChartData){
+
+      //get last 10 temperature items
+      var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
+
+      $.getJSON(url, function(data){
+
+        //sort by timestamp
+        data.sort(function(a,b){
+            return parseInt(a.timeStamp) - parseInt(b.timeStamp);
+        });
+
+        
 
         data.forEach(function(tempItem){
           //add time as label
