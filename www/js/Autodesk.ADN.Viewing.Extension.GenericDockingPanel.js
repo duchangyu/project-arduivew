@@ -156,7 +156,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
   var gernerateTempChart = function(){
 
     //get last 10 temperature items
-    var url = 'http://localhost:3000/api/sensors/561083be06dd6162658ae8c8/values/10';
+    var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
 
     $.getJSON(url, function(data){
 
@@ -192,7 +192,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           lineChartData.labels.push(lbl);
 
           //add temperature values
-          var temperature = tempItem.temperature;
+          var temperature = tempItem.value;
           lineChartData.datasets[0].data.push(temperature);
 
                           

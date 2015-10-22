@@ -193,8 +193,7 @@ void loop() {
     delay(1000);             // Wait for 1s to finish posting the data stream
     WidoClient.close();      // Close the service connection
 
-    RetryMillis = millis();  // Reset the timer stamp for applying the connection with the service
-  }
+   }
 
 
   //  //read temperature every 0.1 seconds

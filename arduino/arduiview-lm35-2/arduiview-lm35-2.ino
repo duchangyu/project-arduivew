@@ -19,7 +19,7 @@
 #define WEBSITE  "arduiview.herokuapp.com"
 
 //The sensor id in mongoDB, currently we have only one sensor
-#define SENSOR_ID "561083be06dd6162658ae8c8";
+#define SENSOR_ID "561083be06dd6162658ae8c8"
 
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(
                            CC3000_CS,
@@ -42,16 +42,12 @@ void setup() {
 
   Serial.begin(115200);
 
-
   initWifiConnection();
-
 }
 
 void loop() {
 
-
   postTemperatureToCloudServer();
-
 
 }
 
@@ -60,36 +56,26 @@ void loop() {
 void postTemperatureToCloudServer() {
 
 
-
   if ( millis() - lastConnectionTime > postingInterval) {
+
+
+    //connectToCloudServer
+    Serial.println(F("trying to connect to cloud server....."));
+    //client.close();
+    client = cc3000.connectTCP(ip, 80);
+
+    Serial.println(F("connected to cloud server - "));
+    Serial.println(WEBSITE );
+
+    Serial.println(F("begin uploading..."));
 
     float temp = 0.0;
     // get the current temperature from sensor
-    //float temp = getCurrentTemperatureValue();
     int reading = analogRead(0);
     temp = reading * 0.0048828125 * 100;
     Serial.print(F("Current temp"));
     Serial.println(temp);
 
-
-
-
-    //connectToCloudServer
-    //while (!client.connected()) {
-    Serial.println("trying to connect to cloud server.....");
-    //client.close();
-    client = cc3000.connectTCP(ip, 80);
-    //client.connect(WEBSITE, 80);
-
-    // note the time that the connection was made:
-    //lastConnectionTime = millis();
-    Serial.println("connected to cloud server - ");
-    Serial.println(WEBSITE );
-    //delay(1000);
-    //}
-
-
-    Serial.println(F("begin uploading..."));
 
     int length;
     char sTemp[] = "";
@@ -109,7 +95,8 @@ void postTemperatureToCloudServer() {
     //}
     //
 
-    char httpPackage[] = "";
+
+    char httpPackage[20] = "";
 
     strcat(httpPackage, "{\"value\": \"");
     strcat(httpPackage, sTemp);
@@ -119,7 +106,7 @@ void postTemperatureToCloudServer() {
     length = strlen(httpPackage);
     // convert int to char array for posting
     itoa(length, sLength, 10);
-    Serial.print("body lenght=");
+    Serial.print(F("body lenght="));
     Serial.println(sLength);
 
 
@@ -127,27 +114,28 @@ void postTemperatureToCloudServer() {
 
 
     //prepare the http header
-    Serial.println("Sending headers...");
+    Serial.println(F("Sending headers..."));
 
     client.fastrprint(F("PUT /api/sensors/"));
     char *sensorId = SENSOR_ID;
     client.fastrprint(sensorId);
+    //client.fastrprint(SENSOR_ID);
     client.fastrprint(F("/values"));
 
     client.fastrprintln(F(" HTTP/1.1"));
     Serial.print(F("."));
 
-    client.fastrprintln(F("Host: "));
-    client.fastrprint(WEBSITE);
+    client.fastrprint(F("Host: "));
+    client.fastrprintln(WEBSITE);
     Serial.print(F("."));
 
     client.fastrprint(F("content-type: "));
-    client.fastrprintln("application/json");
+    client.fastrprintln(F("application/json"));
     Serial.print(F("."));
 
-    client.fastrprint("Content-Length: ");
-    client.fastrprintln(sLength);
-    client.fastrprintln("");
+    client.fastrprint(F("Content-Length: "));
+    client.fastrprintln(sLength); 
+    client.fastrprintln(F(""));
     Serial.print(F("."));
 
     Serial.println(F("header done."));
@@ -156,7 +144,8 @@ void postTemperatureToCloudServer() {
     Serial.println(F("Sending data"));
     client.fastrprintln(httpPackage);
 
-    Serial.println("===upload completed.");
+
+    Serial.println(F("===upload completed."));
 
 
 
@@ -173,18 +162,15 @@ void postTemperatureToCloudServer() {
     delay(1000);             // Wait for 1s to finish posting the data stream
     client.close();      // Close the service connection
 
-    /*
+  /*
     */
 
+    Serial.println(F("upload completed\n"));
 
     // note the time of last uploading
     lastConnectionTime = millis() ;
 
   }
-
-
-
-
 
 
 
@@ -198,7 +184,7 @@ void initWifiConnection()
 
 
   /* Initialise the module */
-  Serial.println(F("\nInitialising the CC3000 ..."));
+  //Serial.println(F("\nInitialising the CC3000 ..."));
   if (!cc3000.begin())
   {
     Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));

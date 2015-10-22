@@ -89,7 +89,7 @@ Viewing.Extension.Workshop = function (viewer, options) {
 
                 _self.panel.addProperty(
                     'temperature', //title
-                    response.temperatureItem.temperature + ' ℃', //value,
+                    response.temperatureItem.value + ' ℃', //value,
                     'Current Temperature' //group name
                   );
 
