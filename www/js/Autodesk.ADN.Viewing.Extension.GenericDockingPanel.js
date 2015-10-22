@@ -185,6 +185,10 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
             return parseInt(a.timeStamp) - parseInt(b.timeStamp);
         });
 
+        //clear first
+        lineChartData.labels.length = 0;
+        lineChartData.datasets[0].data.length = 0;
+
         
 
         data.forEach(function(tempItem){
