@@ -86,14 +86,14 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     /////////////////////////////////////////////////////////////
     
     var html = [
-    ' <canvas id="canvas" height="150" width="305"></canvas>'
+    ' <canvas id="canvasChart" height="150" width="305"></canvas>'
     ];
     $(_thisPanel.container).append(html.join('\n'));
 
 
-    setTimeout(gernerateTempChart, 1000);
+    
 
-    //gernerateTempChart();
+    gernerateTempChart();
 
 
 
@@ -157,33 +157,34 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
   ////////////////////////////////////
   var gernerateTempChart = function(){
 
-    //get last 10 temperature items
-    var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
+    var lineChartData;
+    var updateData = function(lineChartData){
 
-    $.getJSON(url, function(data){
+      //get last 10 temperature items
+      var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
 
-      //sort by timestamp
-      data.sort(function(a,b){
-          return parseInt(a.timeStamp) - parseInt(b.timeStamp);
-      });
+      $.getJSON(url, function(data){
 
+        //sort by timestamp
+        data.sort(function(a,b){
+            return parseInt(a.timeStamp) - parseInt(b.timeStamp);
+        });
 
-
-          var lineChartData = {
-            labels : [],
-            datasets : [
-              {
-                label: "My First dataset",
-                fillColor : "rgba(220,220,220,0.2)",
-                strokeColor : "rgba(220,220,220,1)",
-                pointColor : "rgba(220,220,220,1)",
-                pointStrokeColor : "#fff",
-                pointHighlightFill : "#fff",
-                pointHighlightStroke : "rgba(220,220,220,1)",
-                data : []
-              }
-            ]
-          }
+        lineChartData = {
+          labels : [],
+          datasets : [
+            {
+              label: "My First dataset",
+              fillColor : "rgba(220,220,220,0.2)",
+              strokeColor : "rgba(220,220,220,1)",
+              pointColor : "rgba(220,220,220,1)",
+              pointStrokeColor : "#fff",
+              pointHighlightFill : "#fff",
+              pointHighlightStroke : "rgba(220,220,220,1)",
+              data : []
+            }
+          ]
+        }
 
 
         data.forEach(function(tempItem){
@@ -198,16 +199,31 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           lineChartData.datasets[0].data.push(temperature);
 
                           
-        })
+        });
+
+      });
+
+    }
+    
 
 
-        //generate the chart
-        var ctx = document.getElementById("canvas").getContext("2d");
-          window.myLine = new Chart(ctx).Line(lineChartData, {
-            responsive: true
-          });
+      //generate the chart
+      var ctx = document.getElementById("canvasChart").getContext("2d");
 
-    });
+      setInterval(function(){
+
+        updateData(lineChartData);
+
+        window.myLine = new Chart(ctx).Line(lineChartData, {
+          responsive: true
+        });
+
+      },
+      5000  //5 seconds refresh
+      );
+        
+
+  
 
 
 
