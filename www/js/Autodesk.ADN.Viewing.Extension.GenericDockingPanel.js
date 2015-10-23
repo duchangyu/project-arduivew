@@ -161,7 +161,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           labels : [],
           datasets : [
             {
-              label: "My First dataset",
+              label: "Temperatures",
               fillColor : "rgba(220,220,220,0.2)",
               strokeColor : "rgba(220,220,220,1)",
               pointColor : "rgba(220,220,220,1)",
@@ -179,6 +179,8 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
 
       $.getJSON(url, function(data){
+
+        if(!Array.isArray(data)) return;
 
         //sort by timestamp
         data.sort(function(a,b){
@@ -211,20 +213,20 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     
 
 
-      //generate the chart
-      var ctx = document.getElementById("canvasChart").getContext("2d");
+    //generate the chart
+    var ctx = document.getElementById("canvasChart").getContext("2d");
 
-      setInterval(function(){
+    setInterval(function(){
 
-        updateData(lineChartData);
+      updateData(lineChartData);
 
-        window.myLine = new Chart(ctx).Line(lineChartData, {
-          responsive: true
-        });
+      window.myLine = new Chart(ctx).Line(lineChartData, {
+        responsive: true
+      });
 
-      },
-      5000  //5 seconds refresh
-      );
+    },
+    5000  //5 seconds refresh
+    );
         
 
   

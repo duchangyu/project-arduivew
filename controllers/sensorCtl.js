@@ -97,10 +97,14 @@ exports.getSensorLastValue = function(req,res){
       if(err)
         res.json(err);
 
-      //console.log(sensor.values[2])
+      if(sensor && sensor.values){
 
-      var tempEntry = sensor.values[sensor.values.length-1];
-      res.json(tempEntry);
+        var tempEntry = sensor.values[sensor.values.length-1];
+        res.json(tempEntry);
+      }
+      else{
+        res.json({ message : "sensor with specified id does not exist."})
+      }
     })
 
 }
@@ -114,14 +118,23 @@ exports.getSensorLastNValues = function(req,res){
       if(err)
         res.json(err);
 
-      var total = sensor.values.length;
-      if(count > total) {
-        res.json(sensor.values); //return all values
+      if(sensor && sensor.values){
+
+        var total = sensor.values.length;
+        if(count > total) {
+          res.json(sensor.values); //return all values
+        }
+        else
+        {
+          res.json(sensor.values.slice(sensor.values.length - count));
+        }
+
       }
-      else
-      {
-        res.json(sensor.values.slice(sensor.values.length - count));
+      else{
+        res.json({ message : "sensor with specified id does not exist."})
       }
+
+      
     })
 
 }
