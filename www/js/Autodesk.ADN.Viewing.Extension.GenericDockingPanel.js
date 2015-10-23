@@ -86,7 +86,8 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     /////////////////////////////////////////////////////////////
     
     var html = [
-    ' <canvas id="canvasChart" height="150" width="305"></canvas>'
+    ' <canvas id="canvasChart" height="150" width="305"></canvas>',
+    '<img class="img" src="/images/arduino-lm35.png"></img>'
     ];
     $(_thisPanel.container).append(html.join('\n'));
 
@@ -256,7 +257,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       'top: 0px;',
       'left: 0px;',
       'width: 305px;',
-      'height: 150px;',
+      'height: 450px;',
       'resize: both;',
       'overflow: hidden;',
     '}',
