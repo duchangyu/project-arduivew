@@ -1,18 +1,12 @@
 
-<b>Note:</b> This repo is also used by our [tutorial material](https://github.com/Developer-Autodesk/tutorial-getting.started-view.and.data). If you are following instructions 
-from our tutorial, please ignore the instructions below.
 
-
-# Autodesk View and Data API Node.js Basic Sample
-
-
-[![build status](https://api.travis-ci.org/Developer-Autodesk/workflow-node.js-view.and.data.api.png)](https://travis-ci.org/Developer-Autodesk/workflow-node.js-view.and.data.api)
+# Project Arduiview
 
 
 
 
 ## Description
-This sample demonstrates how to view a model in a web application with the Autodesk View & Data API. This web application implements a basic Node.js server and JavaScript/HTML5 client. It does not demonstrate how to upload a model to the Autodesk server for translation. See instructions below on how to prepare a model to be consumed in this sample.
+This sample demonstrates the idea of connecting View and Data API viewer and Arduino devices. This web application implements a basic Node.js server and JavaScript/HTML5 client. It does not demonstrate how to upload a model to the Autodesk server for translation. See instructions below on how to prepare a model to be consumed in this sample.
 
 
 ## Dependencies
@@ -87,5 +81,5 @@ That samples are licensed under the terms of the [MIT License](http://opensource
 
 ## Written by 
 
-Written by [Philippe Leefsma](http://adndevblog.typepad.com/cloud_and_mobile/philippe-leefsma.html), Autodesk Developer Network.
+Written by Daniel Du, Autodesk Developer Network.
 
