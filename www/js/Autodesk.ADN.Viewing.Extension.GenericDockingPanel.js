@@ -75,7 +75,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       this,
       parentContainer,
       id,
-      'Docking Panel Demo',
+      'Temperatures Curve',
       {shadow:true});
 
     $(_thisPanel.container).addClass('docking-panel');
