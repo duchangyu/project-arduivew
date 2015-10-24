@@ -141,6 +141,9 @@ exports.getSensorLastNValues = function(req,res){
 
 exports.appendSensorValues = function(req,res){  //append
 
+    //we just save 50 + 1 values items to save db spaces
+    var MAX_VAULE_ITEM_COUNT = 50;
+
     var sensorId = req.params.sensorId;
 
     Sensor.findById(sensorId, function(err, sensor){
@@ -152,10 +155,14 @@ exports.appendSensorValues = function(req,res){  //append
       sensorValueItem.value = req.body.value;
 
       //console.log(sensorValueItem);
+      var len = sensor.values.length;
+      sensor.values = sensor.values.slice(len - MAX_VAULE_ITEM_COUNT );
 
       sensor.values = sensor.values.concat(sensorValueItem);
-    
 
+
+      //console.log(sensor.values.length);
+    
       sensor.save(function(err){
         
         if(err)
