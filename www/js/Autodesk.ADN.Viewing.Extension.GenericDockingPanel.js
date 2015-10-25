@@ -87,7 +87,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     
     var html = [
     ' <canvas id="canvasChart" height="150" width="305"></canvas>',
-    '<img class="img" src="/images/arduino-lm35.png"></img>'
+    '<img class="img img-responsive" src="/images/arduino-lm35.png"></img>'
     ];
     $(_thisPanel.container).append(html.join('\n'));
 
