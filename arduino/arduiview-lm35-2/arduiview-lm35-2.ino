@@ -37,6 +37,8 @@ uint32_t ip = 0;
 unsigned long lastConnectionTime = 0;            // last time you connected to the server, in milliseconds
 const unsigned long postingInterval = 5L * 1000L; // delay between updates, in milliseconds
 
+unsigned long lastConnectWifiTime = 0;
+const unsigned long checkNetworkInterval = 30L * 1000L * 60L; //reconnect WIFI every 20 min
 
 void setup() {
 
@@ -47,7 +49,22 @@ void setup() {
 
 void loop() {
 
-  postTemperatureToCloudServer();
+  if (millis() - lastConnectWifiTime > checkNetworkInterval) {
+
+    initWifiConnection();
+
+    lastConnectWifiTime = millis();
+  }
+
+
+  if ( millis() - lastConnectionTime > postingInterval) {
+
+    postTemperatureToCloudServer();
+
+    // note the time of last uploading
+    lastConnectionTime = millis() ;
+
+  }
 
 }
 
@@ -56,121 +73,116 @@ void loop() {
 void postTemperatureToCloudServer() {
 
 
-  if ( millis() - lastConnectionTime > postingInterval) {
+
+  //connectToCloudServer
+  Serial.println(F("trying to connect to cloud server....."));
+  //client.close();
+  client = cc3000.connectTCP(ip, 80);
+
+  Serial.println(F("connected to cloud server - "));
+  Serial.println(WEBSITE );
+
+  Serial.println(F("begin uploading..."));
+
+  float temp = 0.0;
+  // get the current temperature from sensor
+  int reading = analogRead(0);
+  temp = reading * 0.0048828125 * 100;
+  Serial.print(F("Current temp"));
+  Serial.println(temp);
 
 
-    //connectToCloudServer
-    Serial.println(F("trying to connect to cloud server....."));
-    //client.close();
-    client = cc3000.connectTCP(ip, 80);
-
-    Serial.println(F("connected to cloud server - "));
-    Serial.println(WEBSITE );
-
-    Serial.println(F("begin uploading..."));
-
-    float temp = 0.0;
-    // get the current temperature from sensor
-    int reading = analogRead(0);
-    temp = reading * 0.0048828125 * 100;
-    Serial.print(F("Current temp"));
-    Serial.println(temp);
+  int length;
+  char sTemp[5] = "";
+  //convert float to char*,
+  dtostrf(temp, 2, 2, sTemp); //val, integer part width, precise, result char array
+  //itoa(temp, sTemp,10);
+  Serial.println(sTemp);
 
 
-    int length;
-    char sTemp[5] = "";
-    //convert float to char*,
-     dtostrf(temp,2,2, sTemp); //val, integer part width, precise, result char array
-    //itoa(temp, sTemp,10);
-    Serial.println(sTemp);
+  char sLength[3];
 
 
-    char sLength[3];
+  //prepare the http body
+  //
+  //{
+  //  "value" : 55.23
+  //}
+  //
 
 
-    //prepare the http body
-    //
-    //{
-    //  "value" : 55.23
-    //}
-    //
+  char httpPackage[20] = "";
 
+  strcat(httpPackage, "{\"value\": \"");
+  strcat(httpPackage, sTemp);
+  strcat(httpPackage, "\" }");
 
-    char httpPackage[20] = "";
-
-    strcat(httpPackage, "{\"value\": \"");
-    strcat(httpPackage, sTemp);
-    strcat(httpPackage, "\" }");
-
-    // get the length of data package
-    length = strlen(httpPackage);
-    // convert int to char array for posting
-    itoa(length, sLength, 10);
-    Serial.print(F("body lenght="));
-    Serial.println(sLength);
+  // get the length of data package
+  length = strlen(httpPackage);
+  // convert int to char array for posting
+  itoa(length, sLength, 10);
+  Serial.print(F("body lenght="));
+  Serial.println(sLength);
 
 
 
 
 
-    //prepare the http header
-    Serial.println(F("Sending headers..."));
+  //prepare the http header
+  Serial.println(F("Sending headers..."));
 
-    client.fastrprint(F("PUT /api/sensors/"));
-    char *sensorId = SENSOR_ID;
-    client.fastrprint(sensorId);
-    //client.fastrprint(SENSOR_ID);
-    client.fastrprint(F("/values"));
+  client.fastrprint(F("PUT /api/sensors/"));
+  char *sensorId = SENSOR_ID;
+  client.fastrprint(sensorId);
+  //client.fastrprint(SENSOR_ID);
+  client.fastrprint(F("/values"));
 
-    client.fastrprintln(F(" HTTP/1.1"));
-    Serial.print(F("."));
+  client.fastrprintln(F(" HTTP/1.1"));
+  Serial.print(F("."));
 
-    client.fastrprint(F("Host: "));
-    client.fastrprintln(WEBSITE);
-    Serial.print(F("."));
+  client.fastrprint(F("Host: "));
+  client.fastrprintln(WEBSITE);
+  Serial.print(F("."));
 
-    client.fastrprint(F("content-type: "));
-    client.fastrprintln(F("application/json"));
-    Serial.print(F("."));
+  client.fastrprint(F("content-type: "));
+  client.fastrprintln(F("application/json"));
+  Serial.print(F("."));
 
-    client.fastrprint(F("Content-Length: "));
-    client.fastrprintln(sLength); 
-    client.fastrprintln(F(""));
-    Serial.print(F("."));
+  client.fastrprint(F("Content-Length: "));
+  client.fastrprintln(sLength);
+  client.fastrprintln(F(""));
+  Serial.print(F("."));
 
-    Serial.println(F("header done."));
+  Serial.println(F("header done."));
 
-    //send data
-    Serial.println(F("Sending data"));
-    client.fastrprintln(httpPackage);
-
-
-    Serial.println(F("===upload completed."));
+  //send data
+  Serial.println(F("Sending data"));
+  client.fastrprintln(httpPackage);
 
 
+  Serial.println(F("===upload completed."));
 
-    // Get the http page feedback
 
-    unsigned long rTimer = millis();
-    Serial.println(F("Reading Cloud Response!!!\r\n"));
-    while (millis() - rTimer < 2000) {
-      while (client.connected() && client.available()) {
-        char c = client.read();
-        Serial.print(c);
-      }
+
+  // Get the http page feedback
+
+  unsigned long rTimer = millis();
+  Serial.println(F("Reading Cloud Response!!!\r\n"));
+  while (millis() - rTimer < 2000) {
+    while (client.connected() && client.available()) {
+      char c = client.read();
+      Serial.print(c);
     }
-    delay(1000);             // Wait for 1s to finish posting the data stream
-    client.close();      // Close the service connection
+  }
+  delay(1000);             // Wait for 1s to finish posting the data stream
+  client.close();      // Close the service connection
 
   /*
     */
 
-    Serial.println(F("upload completed\n"));
+  Serial.println(F("upload completed\n"));
 
-    // note the time of last uploading
-    lastConnectionTime = millis() ;
 
-  }
 
 
 
