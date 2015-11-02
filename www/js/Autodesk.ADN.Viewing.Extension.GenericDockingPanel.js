@@ -210,6 +210,9 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       //hard coded 
       var alertTemperature = 40;
 
+      //the sensor on roof, dbid = 1735, hardcoded for demo
+      var sensorDbId = 1735;
+
 
       dataloader.getLastTemperature(function(response){
 
@@ -217,17 +220,17 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
         if(lastTemp > alertTemperature) {
 
-           viewer.fitToView(dbId);
+           viewer.fitToView(sensorDbId);
             
-           //the sensor on roof, dbid = 1735, hardcoded for demo
-          viewer.setColorMaterial(1735,0xff0000);
+           
+          viewer.setColorMaterial(sensorDbId,0xff0000);
 
         }else{
 
           viewer.fitToView();
             
-           //the sensor on roof, dbid = 1735, hardcoded for demo
-          viewer.restoreColorMaterial(1735);
+           
+          viewer.restoreColorMaterial(sensorDbId);
 
         }
 
