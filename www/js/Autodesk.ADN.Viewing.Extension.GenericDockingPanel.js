@@ -226,7 +226,6 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
           alerting = true;
             
-           
 
         }else if(alerting){
 
