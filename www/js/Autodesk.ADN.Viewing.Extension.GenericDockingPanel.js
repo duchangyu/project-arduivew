@@ -222,12 +222,13 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
         if(lastTemp > alertTemperature) {
 
+          alerting = true;
+
           viewer.setColorMaterial(sensorDbId,0xff0000);
 
           viewer.fitToView(sensorDbId);
             
            
-          
 
         }else if(alerting){
 
