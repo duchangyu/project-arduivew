@@ -80,7 +80,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
                 
                  var renderProxy = viewer.impl.getRenderProxy(viewer.model, fragId);
 
-                if(renderProxy.meshProxy){
+                //if(renderProxy.meshProxy){
                   viewer.impl.removeOverlay(overlayName, renderProxy.meshProxy);
                   delete renderProxy.meshProxy;
                   
@@ -89,7 +89,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
                   viewer.impl.invalidate(true);
 
 
-                }
+                //}
                 
 
                  
