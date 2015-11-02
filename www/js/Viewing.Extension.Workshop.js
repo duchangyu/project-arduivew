@@ -107,16 +107,20 @@ Viewing.Extension.Workshop = function (viewer, options) {
         }
       }
 
+      var savedDbId = 0;
 
       if(event.dbIdArray.length) {
         var dbId = event.dbIdArray[0];
+
+        savedDbId = dbId;
 
         _viewer.getProperties(
           dbId,
           propertiesHandler);
 
         _viewer.fitToView(dbId);
-        _viewer.isolate(dbId);
+        //_viewer.isolate(dbId);
+
 
         //_self.startRotation();
       }
@@ -124,9 +128,10 @@ Viewing.Extension.Workshop = function (viewer, options) {
 
 		    //clearInterval(_self.interval);
 
-        _viewer.isolate([]);
+        //_viewer.isolate([]);
         _viewer.fitToView();
         _self.panel.setVisible(false);
+
       }
 
     }

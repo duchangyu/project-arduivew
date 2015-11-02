@@ -87,6 +87,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     
     var html = [
     ' <canvas id="canvasChart" height="150" width="305"></canvas>',
+    // '<img class="img" src="/images/red-button.png"/>',
     '<img class="img img-responsive" src="/images/arduino-lm35.png"></img>'
     ];
     $(_thisPanel.container).append(html.join('\n'));
@@ -198,6 +199,38 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
                           
         });
 
+
+
+      });
+
+    }
+
+
+    var highTemperatureMonitor = function(){
+      //hard coded 
+      var alertTemperature = 40;
+
+
+      dataloader.getLastTemperature(function(response){
+
+        var lastTemp = response.temperatureItem.value;
+
+        if(lastTemp > alertTemperature) {
+
+           viewer.fitToView(dbId);
+            
+           //the sensor on roof, dbid = 1735, hardcoded for demo
+          viewer.setColorMaterial(1735,0xff0000);
+
+        }else{
+
+          viewer.fitToView();
+            
+           //the sensor on roof, dbid = 1735, hardcoded for demo
+          viewer.restoreColorMaterial(1735);
+
+        }
+
       });
 
     }
@@ -214,6 +247,10 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       window.myLine = new Chart(ctx).Line(lineChartData, {
         responsive: true
       });
+
+
+      //start high temperature monitoring 
+      highTemperatureMonitor();
 
     },
     5000  //5 seconds refresh

@@ -61,6 +61,9 @@ $(document).ready(function () {
 });
 
 function loadExtensions(viewer) {
+
+        viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Color');
+
         viewer.loadExtension('Viewing.Extension.Workshop');
 
         var dockingPanelOptions = {
