@@ -85,7 +85,7 @@ Viewing.Extension.Workshop = function (viewer, options) {
 
 
 
-         _self.GetLastTemperature(function(response){
+         dataloader.getLastTemperature(function(response){
 
                 _self.panel.addProperty(
                     'temperature', //title
@@ -93,11 +93,11 @@ Viewing.Extension.Workshop = function (viewer, options) {
                     'Current Temperature' //group name
                   );
 
-                _self.panel.addProperty(
-                    'temp trend', //title
-                    'http://www.baidu.com', //value,
-                    'Current Temperature'
-                  );
+                // _self.panel.addProperty(
+                //     'temp trend', //title
+                //     'http://www.baidu.com', //value,
+                //     'Current Temperature'
+                //   );
 
        
               })
@@ -133,25 +133,7 @@ Viewing.Extension.Workshop = function (viewer, options) {
 
 
 
- ///////////////////////////////////////////////////////////////////////////
-    // get stock market quotes from Yahoo
-    //
-    ///////////////////////////////////////////////////////////////////////////
-    _self.GetLastTemperature = function(onSuccess) {
-
-        var url = '/api/sensors/561083be06dd6162658ae8c8/values/last' ;
-            
-
-
-        $.getJSON(url, function(data){
-
-            var response = {
-                temperatureItem : data
-            }
-
-            onSuccess(response);
-        });
-    }
+ 
 
 
 

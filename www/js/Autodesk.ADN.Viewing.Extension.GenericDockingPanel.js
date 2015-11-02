@@ -176,17 +176,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
     var updateData = function(lineChartData){
 
-      //get last 10 temperature items
-      var url = '/api/sensors/561083be06dd6162658ae8c8/values/10';
-
-      $.getJSON(url, function(data){
-
-        if(!Array.isArray(data)) return;
-
-        //sort by timestamp
-        data.sort(function(a,b){
-            return parseInt(a.timeStamp) - parseInt(b.timeStamp);
-        });
+      dataloader.getLast10Temperatures(function(tempItems){
 
         //clear first
         lineChartData.labels.length = 0;
@@ -194,7 +184,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
         
 
-        data.forEach(function(tempItem){
+        tempItems.forEach(function(tempItem){
           //add time as label
           var timeStamp = tempItem.timestamp;
           var lbl = new Date(timeStamp).toLocaleTimeString();
