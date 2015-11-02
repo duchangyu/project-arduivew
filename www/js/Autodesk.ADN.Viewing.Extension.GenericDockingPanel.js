@@ -213,7 +213,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       //the sensor on roof, dbid = 1735, hardcoded for demo
       var sensorDbId = 1735;
 
-      var boolean alerting = false;
+      var alerting = false;
 
 
       dataloader.getLastTemperature(function(response){
