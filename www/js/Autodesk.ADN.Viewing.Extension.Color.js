@@ -41,64 +41,76 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
         }
 
         ///////////////////////////////////////////////////////////////////////////
-        // Set color for node
+        // Set color for nodes
+        // objectIds should be an array of dbId
+        // 
         //
         ///////////////////////////////////////////////////////////////////////////
-        Autodesk.Viewing.Viewer3D.prototype.setColorMaterial = function(dbid, color) {
+        Autodesk.Viewing.Viewer3D.prototype.setColorMaterial = function(objectIds, color) {
             var material = addMaterial(color);
 
-            //from dbid to node, to fragid
-            var it = viewer.model.getData().instanceTree;
+            for (var i=0; i<objectIds.length; i++) {
 
-            it.enumNodeFragments(dbid, function (fragId) {
+                var dbid = objectIds[i];
 
-                
-                var renderProxy = viewer.impl.getRenderProxy(viewer.model, fragId);
-                
-                renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
+                //from dbid to node, to fragid
+                var it = viewer.model.getData().instanceTree;
 
-                renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
-                renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
-                renderProxy.meshProxy.matrixAutoUpdate = false;
-                renderProxy.meshProxy.frustumCulled = false;
+                it.enumNodeFragments(dbid, function (fragId) {
 
-                viewer.impl.addOverlay(overlayName, renderProxy.meshProxy);
-                viewer.impl.invalidate(true);
-                
-            }, false);
+                    
+                    var renderProxy = viewer.impl.getRenderProxy(viewer.model, fragId);
+                    
+                    renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
+
+                    renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
+                    renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
+                    renderProxy.meshProxy.matrixAutoUpdate = false;
+                    renderProxy.meshProxy.frustumCulled = false;
+
+                    viewer.impl.addOverlay(overlayName, renderProxy.meshProxy);
+                    viewer.impl.invalidate(true);
+                    
+                }, false);
+            }
 
         }
 
 
-        Autodesk.Viewing.Viewer3D.prototype.restoreColorMaterial = function(dbid) {
+        Autodesk.Viewing.Viewer3D.prototype.restoreColorMaterial = function(objectIds) {
        
+            for (var i=0; i<objectIds.length; i++) {
 
-            //from dbid to node, to fragid
-            var it = viewer.model.getData().instanceTree;
-
-            it.enumNodeFragments(dbid, function (fragId) {
-
-                
-                 var renderProxy = viewer.impl.getRenderProxy(viewer.model, fragId);
-
-                if(renderProxy.meshProxy){
-
-                  //remove all overlays with same name
-                  viewer.impl.clearOverlay(overlayName);
-                  //viewer.impl.removeOverlay(overlayName, renderProxy.meshProxy);
-                  delete renderProxy.meshProxy;
-                  
-
-                  //refresh the sence
-                  
-                  viewer.impl.invalidate(true);
+                var dbid = objectIds[i];
 
 
-                }
-                
+                //from dbid to node, to fragid
+                var it = viewer.model.getData().instanceTree;
 
-                 
-            }, true);
+                it.enumNodeFragments(dbid, function (fragId) {
+
+                    
+                     var renderProxy = viewer.impl.getRenderProxy(viewer.model, fragId);
+
+                    if(renderProxy.meshProxy){
+
+                      //remove all overlays with same name
+                      viewer.impl.clearOverlay(overlayName);
+                      //viewer.impl.removeOverlay(overlayName, renderProxy.meshProxy);
+                      delete renderProxy.meshProxy;
+                      
+
+                      //refresh the sence
+                      
+                      viewer.impl.invalidate(true);
+
+
+                    }
+                    
+
+                     
+                }, true);
+            }
 
   
         }

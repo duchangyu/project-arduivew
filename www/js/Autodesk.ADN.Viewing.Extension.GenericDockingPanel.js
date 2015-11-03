@@ -219,7 +219,8 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       var alertTemperature = 40;
 
       //the sensor on roof, dbid = 1735, hardcoded for demo
-      var sensorDbId = 1735;
+      //an Array
+      var sensorDbId = [1735];
 
       var raiseAlarm = function(){
         viewer.fitToView(sensorDbId);
