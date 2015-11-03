@@ -55,18 +55,16 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
                 
                 var renderProxy = viewer.impl.getRenderProxy(viewer.model, fragId);
                 
-                //do not add overlay duplicatly if this is called many times
-                if(!renderProxy.meshProxy) {
-                  renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
+                renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
 
-                  renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
-                  renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
-                  renderProxy.meshProxy.matrixAutoUpdate = false;
-                  renderProxy.meshProxy.frustumCulled = false;
+                renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
+                renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
+                renderProxy.meshProxy.matrixAutoUpdate = false;
+                renderProxy.meshProxy.frustumCulled = false;
 
-                  viewer.impl.addOverlay(overlayName, renderProxy.meshProxy);
-                  viewer.impl.invalidate(true);
-                }
+                viewer.impl.addOverlay(overlayName, renderProxy.meshProxy);
+                viewer.impl.invalidate(true);
+                
             }, false);
 
         }

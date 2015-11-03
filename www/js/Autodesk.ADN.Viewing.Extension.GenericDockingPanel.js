@@ -206,6 +206,10 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     }
 
 
+    //whether an alert is going on
+    var alerting = false;
+
+
     var highTemperatureMonitor = function(){
       //hard coded 
       var alertTemperature = 40;
@@ -213,27 +217,30 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       //the sensor on roof, dbid = 1735, hardcoded for demo
       var sensorDbId = 1735;
 
-      var alerting = false;
+ 
 
 
       dataloader.getLastTemperature(function(response){
 
         var lastTemp = response.temperatureItem.value;
 
-        if(lastTemp > alertTemperature) {
+        //was normal  && exceed to high temperature 
+        if(!alerting && lastTemp >= alertTemperature) {
 
-          viewer.fitToView(sensorDbId);
+          //viewer.fitToView(sensorDbId);
           viewer.setColorMaterial(sensorDbId,0xff0000);
           
 
           alerting = true;
             
 
-        }else if(alerting){
+        }
+        //was abnormal && temperature back to normal, alert dissmissed
+        else if(alerting && lastTemp < alertTemperature){
 
           //dismiss alert
           
-          viewer.fitToView();
+          //viewer.fitToView();
           viewer.restoreColorMaterial(sensorDbId);
 
           alerting = false;  
@@ -260,6 +267,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
 
       //start high temperature monitoring 
+ 
       highTemperatureMonitor();
 
     },
