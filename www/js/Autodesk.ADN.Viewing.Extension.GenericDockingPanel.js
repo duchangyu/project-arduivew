@@ -86,9 +86,11 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     /////////////////////////////////////////////////////////////
     
     var html = [
-    ' <canvas id="canvasChart" height="150" width="305"></canvas>',
-    // '<img class="img" src="/images/red-button.png"/>',
-    '<img class="img img-responsive" src="/images/arduino-lm35.png"></img>'
+    ' <p><canvas id="canvasChart" height="150" width="305"></canvas></p>',
+    '<P><div id="tempStatus" class="dockingPanelTitle text-right">',
+    '<img class="img" style="height:30px; width:30px" src="/images/green-button.png"/>  <span >Normal </span>',
+    '</div></p>',
+    '<p><img class="img img-responsive" src="/images/arduino-lm35.png"></img></p>'
     ];
     $(_thisPanel.container).append(html.join('\n'));
 
@@ -210,12 +212,39 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     var alerting = false;
 
 
+
+
     var highTemperatureMonitor = function(){
       //hard coded 
       var alertTemperature = 40;
 
       //the sensor on roof, dbid = 1735, hardcoded for demo
       var sensorDbId = 1735;
+
+      var raiseAlarm = function(){
+        viewer.fitToView(sensorDbId);
+        viewer.setColorMaterial(sensorDbId,0xff0000);
+
+        //light up the red button
+        var html = [
+          '<img class="img" style="height:30px; width:30px" src="/images/red-button.png"/>  <span >Alarm! High Temperature! </span>',
+          '<audio id="audioAlert" src="/images/alarm2.mp3" autoplay loop>',
+          '  Your browser does not support the audio element.',
+          '</audio>',
+        ];
+        $('#tempStatus').html(html.join('\n'));
+
+      };
+
+      var dismissAlerm = function(){
+        viewer.fitToView();
+        viewer.restoreColorMaterial(sensorDbId);
+
+        //light up the green button
+        var html = '<img class="img" style="height:30px; width:30px" src="/images/green-button.png"/>  <span >Normal </span>';
+        $('#tempStatus').html(html);
+
+      };
 
  
 
@@ -227,10 +256,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
         //was normal  && exceed to high temperature 
         if(!alerting && lastTemp >= alertTemperature) {
 
-          viewer.fitToView(sensorDbId);
-          viewer.setColorMaterial(sensorDbId,0xff0000);
-          
-
+          raiseAlarm();
           alerting = true;
             
 
@@ -238,9 +264,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
         //was abnormal && temperature back to normal, alert dissmissed
         else if(alerting && lastTemp < alertTemperature){
           
-          viewer.fitToView();
-          viewer.restoreColorMaterial(sensorDbId);
-
+          dismissAlerm();
           alerting = false;  
           
 

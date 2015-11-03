@@ -118,6 +118,7 @@ Viewing.Extension.Workshop = function (viewer, options) {
           propertiesHandler);
 
         _viewer.fitToView(dbId);
+
         //_viewer.isolate(dbId);
 
 
