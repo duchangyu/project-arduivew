@@ -62,6 +62,9 @@ $(document).ready(function () {
 
 function loadExtensions(viewer) {
 
+        //load measure extension
+        viewer.loadExtension("Autodesk.Measure");
+
         viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Color');
 
         viewer.loadExtension('Viewing.Extension.Workshop');
