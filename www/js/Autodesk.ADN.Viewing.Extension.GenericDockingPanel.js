@@ -325,7 +325,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       'top: 0px;',
       'left: 0px;',
       'width: 305px;',
-      'height: 450px;',
+      'height: 550px;',
       'resize: both;',
       'overflow: hidden;',
     '}',
