@@ -107,12 +107,11 @@ Viewing.Extension.Workshop = function (viewer, options) {
         }
       }
 
-      var savedDbId = 0;
+
 
       if(event.dbIdArray.length) {
         var dbId = event.dbIdArray[0];
 
-        savedDbId = dbId;
 
         _viewer.getProperties(
           dbId,

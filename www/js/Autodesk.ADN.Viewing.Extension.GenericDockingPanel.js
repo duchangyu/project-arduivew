@@ -227,7 +227,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
         //was normal  && exceed to high temperature 
         if(!alerting && lastTemp >= alertTemperature) {
 
-          //viewer.fitToView(sensorDbId);
+          viewer.fitToView(sensorDbId);
           viewer.setColorMaterial(sensorDbId,0xff0000);
           
 
@@ -237,10 +237,8 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
         }
         //was abnormal && temperature back to normal, alert dissmissed
         else if(alerting && lastTemp < alertTemperature){
-
-          //dismiss alert
           
-          //viewer.fitToView();
+          viewer.fitToView();
           viewer.restoreColorMaterial(sensorDbId);
 
           alerting = false;  
