@@ -21,8 +21,13 @@ var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var dbconfig = require('./config/dbconfig');
+var helmet = require('helmet');
 
 var app = express();
+
+app.use(helmet.xssFilter());
+app.use(helmet.xframe('deny'));
+app.use(helmet.hidePoweredBy());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
