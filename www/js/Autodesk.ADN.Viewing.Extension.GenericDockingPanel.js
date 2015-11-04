@@ -96,8 +96,17 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
 
     
+    setInterval(function(){
 
-    gernerateTempChart();
+      gernerateTempChart();
+      
+      //start high temperature monitoring 
+      highTemperatureMonitor();
+
+    },
+    5000  //5 seconds refresh
+    );
+
 
 
 
@@ -177,7 +186,6 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           ]
         }
 
-    var updateData = function(lineChartData){
 
       dataloader.getLast10Temperatures(function(tempItems){
 
@@ -198,6 +206,35 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           var temperature = tempItem.value;
           lineChartData.datasets[0].data.push(temperature);
 
+
+
+          //generate the chart
+          var ctx = document.getElementById("canvasChart").getContext("2d");
+
+        
+
+            var min = Math.min.apply(null, lineChartData.datasets[0].data) ; 
+            var max = Math.max.apply(null, lineChartData.datasets[0].data) ;         
+
+            if(max - min < 1 ){ //temperature almost contant, change is less than 1
+              
+              var step =  1 * 1.0 / lineChartData.datasets[0].data.length; // * 1.0 converts to float
+
+              Chart.defaults.Line.scaleOverride = true;
+              Chart.defaults.Line.scaleSteps = step;
+              Chart.defaults.Line.scaleStepWidth = max + 1;//with a margin 
+              Chart.defaults.Line.scaleStartValue = min - 1;
+            }
+            
+            window.myLine = new Chart(ctx).Line(lineChartData, {
+              responsive: true 
+              // ,
+              // scaleOverride : true,
+              // scaleSteps : step,
+              // scaleStepWidth : max,
+              // scaleStartValue : min
+            });
+
                           
         });
 
@@ -205,113 +242,77 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
       });
 
-    }
 
 
-    //whether an alert is going on
-    var alerting = false;
-
-
-
-
-    var highTemperatureMonitor = function(){
-      //hard coded 
-      var alertTemperature = 40;
-
-      //the sensor on roof, dbid = 1735, hardcoded for demo
-      //an Array
-      var sensorDbId = [1735];
-
-      var raiseAlarm = function(){
-        viewer.fitToView(sensorDbId);
-        viewer.setColorMaterial(sensorDbId,0xff0000);
-
-        //light up the red button
-        var html = [
-          '<img class="img" style="height:30px; width:30px" src="/images/red-button.png"/>  <span >Alarm! High Temperature! </span>',
-          '<audio id="audioAlert" src="/images/alarm2.mp3" autoplay loop>',
-          '  Your browser does not support the audio element.',
-          '</audio>',
-        ];
-        $('#tempStatus').html(html.join('\n'));
-
-      };
-
-      var dismissAlerm = function(){
-        viewer.fitToView();
-        viewer.restoreColorMaterial(sensorDbId);
-
-        //light up the green button
-        var html = '<img class="img" style="height:30px; width:30px" src="/images/green-button.png"/>  <span >Normal </span>';
-        $('#tempStatus').html(html);
-
-      };
-
- 
-
-
-      dataloader.getLastTemperature(function(response){
-
-        var lastTemp = response.temperatureItem.value;
-
-        //was normal  && exceed to high temperature 
-        if(!alerting && lastTemp >= alertTemperature) {
-
-          raiseAlarm();
-          alerting = true;
-            
-
-        }
-        //was abnormal && temperature back to normal, alert dissmissed
-        else if(alerting && lastTemp < alertTemperature){
-          
-          dismissAlerm();
-          alerting = false;  
-          
-
-        }
-
-      });
-
-    }
+    
     
 
 
-    //generate the chart
-    var ctx = document.getElementById("canvasChart").getContext("2d");
 
-    setInterval(function(){
+  }
 
-      updateData(lineChartData);
-
-      // var min = Math.min.apply(null, lineChartData.datasets[0].data) - 2; //with a margin at 2 degree
-      // var max = Math.max.apply(null, lineChartData.datasets[0].data) + 2;  
-      // var step = (max - min) / lineChartData.datasets[0].length;
-
-      window.myLine = new Chart(ctx).Line(lineChartData, {
-        responsive: true 
-        // ,
-        // scaleOverride : true,
-        // scaleSteps : 0.1,
-        // scaleStepWidth : max,
-        // scaleStartValue : min
-      });
-
-      window.myLine.update();
+  //whether an alert is going on
+  var alerting = false;
 
 
-      //start high temperature monitoring 
- 
-      highTemperatureMonitor();
+  var highTemperatureMonitor = function(){
+    //hard coded 
+    var alertTemperature = 40;
 
-    },
-    5000  //5 seconds refresh
-    );
+    //the sensor on roof, dbid = 1735, hardcoded for demo
+    //an Array
+    var sensorDbId = [1735];
+
+    var raiseAlarm = function(){
+      viewer.fitToView(sensorDbId);
+      viewer.setColorMaterial(sensorDbId,0xff0000);
+
+      //light up the red button
+      var html = [
+        '<img class="img" style="height:30px; width:30px" src="/images/red-button.png"/>  <span >Alarm! High Temperature! </span>',
+        '<audio id="audioAlert" src="/images/alarm2.mp3" autoplay loop>',
+        '  Your browser does not support the audio element.',
+        '</audio>',
+      ];
+      $('#tempStatus').html(html.join('\n'));
+
+    };
+
+    var dismissAlerm = function(){
+      viewer.fitToView();
+      viewer.restoreColorMaterial(sensorDbId);
+
+      //light up the green button
+      var html = '<img class="img" style="height:30px; width:30px" src="/images/green-button.png"/>  <span >Normal </span>';
+      $('#tempStatus').html(html);
+
+    };
+
+
+
+
+    dataloader.getLastTemperature(function(response){
+
+      var lastTemp = response.temperatureItem.value;
+
+      //was normal  && exceed to high temperature 
+      if(!alerting && lastTemp >= alertTemperature) {
+
+        raiseAlarm();
+        alerting = true;
+          
+
+      }
+      //was abnormal && temperature back to normal, alert dissmissed
+      else if(alerting && lastTemp < alertTemperature){
+        
+        dismissAlerm();
+        alerting = false;  
         
 
-  
+      }
 
-
+    });
 
   }
 
