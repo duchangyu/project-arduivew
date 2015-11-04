@@ -86,7 +86,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     /////////////////////////////////////////////////////////////
     
     var html = [
-    ' <p><canvas id="canvasChart" height="150" width="305"></canvas></p>',
+    ' <p><div><canvas id="canvasChart" height="150" width="305"></canvas></div></p>',
     '<P><div id="tempStatus" class="dockingPanelTitle text-right">',
     '<img class="img" style="height:30px; width:30px" src="/images/green-button.png"/>  <span >Normal </span>',
     '</div></p>',
@@ -284,9 +284,20 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
       updateData(lineChartData);
 
+      // var min = Math.min.apply(null, lineChartData.datasets[0].data) - 2; //with a margin at 2 degree
+      // var max = Math.max.apply(null, lineChartData.datasets[0].data) + 2;  
+      // var step = (max - min) / lineChartData.datasets[0].length;
+
       window.myLine = new Chart(ctx).Line(lineChartData, {
-        responsive: true
+        responsive: true 
+        // ,
+        // scaleOverride : true,
+        // scaleSteps : 0.1,
+        // scaleStepWidth : max,
+        // scaleStartValue : min
       });
+
+      window.myLine.update();
 
 
       //start high temperature monitoring 
