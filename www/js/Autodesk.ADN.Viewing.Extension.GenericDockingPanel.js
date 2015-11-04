@@ -213,14 +213,14 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
         var min = Math.min.apply(null, lineChartData.datasets[0].data) ; 
         var max = Math.max.apply(null, lineChartData.datasets[0].data) ;         
 
-        //an extra step so that the highest point does not fall on the top of chart
-        var steps = lineChartData.datasets[0].data.length + 1;
+        
+        var steps = lineChartData.datasets[0].data.length ;
         var stepsWidth = (max - min) / steps;
         var stepValue = min;
 
         //with 1 degree as bottom margin on chart 
         //so that the lowered point does not fall on the x-axis
-        var margin = 1; 
+        var margin = 0.5; 
 
         if(max - min < 1 ){ //temperature almost constant, change is less than 1 degree
           
