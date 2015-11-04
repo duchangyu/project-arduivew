@@ -194,7 +194,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
         lineChartData.datasets[0].data.length = 0;
 
         
-
+        //prepare data
         tempItems.forEach(function(tempItem){
           //add time as label
           var timeStamp = tempItem.timestamp;
@@ -203,50 +203,50 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
           lineChartData.labels.push(lbl);
 
           //add temperature values
-          var temperature = tempItem.value;
-          lineChartData.datasets[0].data.push(temperature);
-
-
-
-          //generate the chart
-          var ctx = document.getElementById("canvasChart").getContext("2d");
-
-        
-
-            var min = Math.min.apply(null, lineChartData.datasets[0].data) ; 
-            var max = Math.max.apply(null, lineChartData.datasets[0].data) ;         
-
-            if(max - min < 1 ){ //temperature almost contant, change is less than 1
-              
-              var step =  1 * 1.0 / lineChartData.datasets[0].data.length; // * 1.0 converts to float
-
-              Chart.defaults.Line.scaleOverride = true;
-              Chart.defaults.Line.scaleSteps = step;
-              Chart.defaults.Line.scaleStepWidth = max + 1;//with a margin 
-              Chart.defaults.Line.scaleStartValue = min - 1;
-            }
-            
-            window.myLine = new Chart(ctx).Line(lineChartData, {
-              responsive: true 
-              // ,
-              // scaleOverride : true,
-              // scaleSteps : step,
-              // scaleStepWidth : max,
-              // scaleStartValue : min
-            });
-
-                          
+          var temperature = parseFloat(tempItem.value).toFixed(1);// 0.1 degree precise
+          lineChartData.datasets[0].data.push(temperature); 
+                  
         });
 
 
+        
+        var min = Math.min.apply(null, lineChartData.datasets[0].data) ; 
+        var max = Math.max.apply(null, lineChartData.datasets[0].data) ;         
+
+        //an extra step so that the highest point does not fall on the top of chart
+        var steps = lineChartData.datasets[0].data.length + 1;
+        var stepsWidth = (max - min) / steps;
+        var stepValue = min;
+
+        //with 1 degree as bottom margin on chart 
+        //so that the lowered point does not fall on the x-axis
+        var margin = 1; 
+
+        if(max - min < 1 ){ //temperature almost constant, change is less than 1 degree
+          
+          stepsWidth = 1.0 / steps;
+          stepValue = min - margin;
+          
+        }else{
+
+            stepsWidth = (max - min) * 1.0 / steps;
+            stepValue = min - margin ;
+
+        }
+
+        //generate the chart
+        var ctx = document.getElementById("canvasChart").getContext("2d");
+        window.myLine = new Chart(ctx).Line(lineChartData, {
+          responsive: true 
+          ,
+          scaleOverride : true,
+          scaleSteps : steps,
+          scaleStepWidth : stepsWidth,
+          scaleStartValue : stepValue,
+          scaleLabel: "<%= Number(value).toFixed(1) %>"
+        });
 
       });
-
-
-
-    
-    
-
 
 
   }
