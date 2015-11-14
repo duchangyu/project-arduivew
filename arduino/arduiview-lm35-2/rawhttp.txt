@@ -1,0 +1,7 @@
+PUT /api/sensors/value HTTP/1.1
+HOST: arduiview.heroku.com
+content-type : application/json
+Content-Length : 19
+{
+  value : 22
+}

@@ -25,6 +25,7 @@ var helmet = require('helmet');
 
 var app = express();
 
+//security
 app.use(helmet.xssFilter());
 app.use(helmet.xframe('deny'));
 app.use(helmet.hidePoweredBy());
