@@ -86,7 +86,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     /////////////////////////////////////////////////////////////
     
     var html = [
-    ' <p><div><canvas id="canvasChart" height="150" width="305"></canvas></div></p>',
+    ' <p><div><canvas id="smoothie-chart" height="150" width="305"></canvas></div></p>',
     '<P><div id="tempStatus" class="dockingPanelTitle text-right">',
     '<img class="img" style="height:30px; width:30px" src="/images/green-button.png"/>  <span >Normal </span>',
     '</div></p>',
@@ -95,17 +95,77 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     $(_thisPanel.container).append(html.join('\n'));
 
 
+
+    //generate the chart
+    var chart = new SmoothieChart({timestampFormatter:SmoothieChart.timeFormatter}),
+    canvas = document.getElementById('smoothie-chart'),
+    series = new TimeSeries();
+
+    chart.addTimeSeries(
+      series, 
+      {lineWidth:2,
+        strokeStyle:'#00ff00',
+        fillStyle:'rgba(198,181,78,0.30)',
+        minValue : 0,
+        maxValue : 60
+      });
+    chart.streamTo(canvas, 1000 /* some time delay */);
+
+
+    //get mqtt configuration from server
+    $.getJSON('/api/mqttconfig',function(mqttconfig){
+
+      var clientId = "ws" + Math.random();
+      // Create a client instance
+      var client = new Paho.MQTT.Client(
+            mqttconfig.broker_url, 
+            mqttconfig.websocket_port, 
+            clientId);
+
+      // set callback handlers
+          client.onConnectionLost = onConnectionLost;
+          client.onMessageArrived = onMessageArrived;
+
+      // connect the client
+      client.connect({
+        useSSL: true,
+        userName: mqttconfig.username,
+        password: mqttconfig.password,
+        onSuccess: onConnect
+      });
+
+      // called when the client connects
+      function onConnect() {
+        // Once a connection has been made, make a subscription and send a message.
+        console.log("onConnect");
+        client.subscribe(mqttconfig.topic);
+      }
+
+      // called when the client loses its connection
+      function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+          console.log("onConnectionLost:", responseObject.errorMessage);
+          setTimeout(function() { client.connect() }, 5000);
+        }
+      }
+
+      // called when a message arrives
+      function onMessageArrived(message) {
+
+        var topic = message.destinationName;
+        var temperature = message.payloadString;
+
+        //console.log('recieved on ' + topic + 'temperature : ' + temperature);
+        highTemperatureMonitor(temperature);
+        series.append(new Date().getTime(), temperature);
+
+      }
+
+
+    });
+
     
-    setInterval(function(){
 
-      gernerateTempChart();
-      
-      //start high temperature monitoring 
-      highTemperatureMonitor();
-
-    },
-    5000  //5 seconds refresh
-    );
 
 
 
@@ -164,98 +224,12 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
 
 
-  ////////////////////////////////////
-  ///Generate the chart
-  ///
-  ////////////////////////////////////
-  var gernerateTempChart = function(){
-
-    var lineChartData = {
-          labels : [],
-          datasets : [
-            {
-              label: "Temperatures",
-              fillColor : "rgba(220,220,220,0.2)",
-              strokeColor : "rgba(220,220,220,1)",
-              pointColor : "rgba(220,220,220,1)",
-              pointStrokeColor : "#fff",
-              pointHighlightFill : "#fff",
-              pointHighlightStroke : "rgba(220,220,220,1)",
-              data : []
-            }
-          ]
-        }
-
-
-      dataloader.getLast10Temperatures(function(tempItems){
-
-        //clear first
-        lineChartData.labels.length = 0;
-        lineChartData.datasets[0].data.length = 0;
-
-        
-        //prepare data
-        tempItems.forEach(function(tempItem){
-          //add time as label
-          var timeStamp = tempItem.timestamp;
-          var lbl = new Date(timeStamp).toLocaleTimeString();
-
-          lineChartData.labels.push(lbl);
-
-          //add temperature values
-          var temperature = parseFloat(tempItem.value).toFixed(1);// 0.1 degree precise
-          lineChartData.datasets[0].data.push(temperature); 
-                  
-        });
-
-
-        
-        var min = Math.min.apply(null, lineChartData.datasets[0].data) ; 
-        var max = Math.max.apply(null, lineChartData.datasets[0].data) ;         
-
-        
-        var steps = lineChartData.datasets[0].data.length ;
-        var stepsWidth = (max - min) / steps;
-        var stepValue = min;
-
-        //with 1 degree as bottom margin on chart 
-        //so that the lowered point does not fall on the x-axis
-        var margin = 0.5; 
-
-        if(max - min < 1 ){ //temperature almost constant, change is less than 1 degree
-          
-          stepsWidth = 1.0 / steps;
-          stepValue = min - margin;
-          
-        }else{
-
-            stepsWidth = (max - min) * 1.0 / steps;
-            stepValue = min - margin ;
-
-        }
-
-        //generate the chart
-        var ctx = document.getElementById("canvasChart").getContext("2d");
-        window.myLine = new Chart(ctx).Line(lineChartData, {
-          responsive: true 
-          ,
-          scaleOverride : true,
-          scaleSteps : steps,
-          scaleStepWidth : stepsWidth,
-          scaleStartValue : stepValue,
-          scaleLabel: "<%= Number(value).toFixed(1) %>"
-        });
-
-      });
-
-
-  }
 
   //whether an alert is going on
   var alerting = false;
 
 
-  var highTemperatureMonitor = function(){
+  var highTemperatureMonitor = function(lastTemp){
     //hard coded 
     var alertTemperature = 40;
 
@@ -270,7 +244,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       //light up the red button
       var html = [
         '<img class="img" style="height:30px; width:30px" src="/images/red-button.png"/>  <span >Alarm! High Temperature! </span>',
-        '<audio id="audioAlert" src="/images/alarm2.mp3" autoplay loop>',
+        '<audio id="audioAlert" src="/images/fire-alarm.mp3" autoplay loop>',
         '  Your browser does not support the audio element.',
         '</audio>',
       ];
@@ -289,12 +263,6 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     };
 
 
-
-
-    dataloader.getLastTemperature(function(response){
-
-      var lastTemp = response.temperatureItem.value;
-
       //was normal  && exceed to high temperature 
       if(!alerting && lastTemp >= alertTemperature) {
 
@@ -312,7 +280,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
       }
 
-    });
+ 
 
   }
 

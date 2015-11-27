@@ -22,6 +22,8 @@ var express =require ('express') ;
 var request =require ('request') ;
 var sensorController = require('../controllers/sensorCtl');
 
+var mqttconfig = require('../config/mqttconfig');
+
 var router =express.Router () ;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,6 +39,11 @@ router.get ('/token', function (req, res) {
         }) ;
 }) ;
 
+router.get('/mqttconfig',function(req,res){
+
+  res.json(mqttconfig);
+
+});
 
 
 

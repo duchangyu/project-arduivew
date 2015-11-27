@@ -24,39 +24,16 @@
       <label for="temperature" class="col-sm-2">temperature : </label>
       <input type="number" name="temperature" id="inputTemperature" class="form-control" value="26" min="{5"} max="100" step="5" required="required" title="Temperature"> 
       <button id="btnSubmit" type="submit" class="btn btn-primary">Set Temperature</button>
+      <button id="btnSubmitRandom" type="submit" class="btn btn-warning">Set Random Test Temperature (15 ~ 35)</button>
+      <button id="btnClearRandom" type="submit" class="btn btn-success">Clear Random Temperature </button>
     </div>
 
     <!-- jQuery -->
     <script src="//code.jquery.com/jquery.js"></script>
     <!-- Bootstrap JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://api.cloudmqtt.com/sso/js/mqttws31.js" type="text/javascript"></script>
 
-    <script type="text/javascript">
-
-      $('#btnSubmit').click(function(event) {
-        /* Act on the event */
-
-        var temp = $('#inputTemperature').val();
-
-        $.ajax({
-          url: '/api/sensors/561083be06dd6162658ae8c8/values',
-          type: 'PUT',
-          dataType: 'json',
-          data: {value: temp},
-        })
-        .done(function() {
-          console.log("success");
-        })
-        .fail(function() {
-          console.log("error");
-        })
-        .always(function() {
-          console.log("complete");
-        });
-        
-      });
-
-
-    </script>
+   <script type="text/javascript" src="/js/fakesensor.js"></script>
   </body>
 </html>
