@@ -97,19 +97,26 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
 
 
     //generate the chart
-    var chart = new SmoothieChart({timestampFormatter:SmoothieChart.timeFormatter}),
-    canvas = document.getElementById('smoothie-chart'),
-    series = new TimeSeries();
+    var chart = new SmoothieChart(
+      {grid : {fillStyle : 'rgba(0,0,0,0.52)', verticalSections : 4, millisPerLine : 1000},
+      timestampFormatter:SmoothieChart.timeFormatter,
+      minValue : 0,
+      maxValue : 45
+    });
+
+    var canvas = document.getElementById('smoothie-chart');
+    var series = new TimeSeries();
 
     chart.addTimeSeries(
       series, 
-      {lineWidth:2,
+      { lineWidth:2,
         strokeStyle:'#00ff00',
         fillStyle:'rgba(198,181,78,0.30)',
-        minValue : 0,
-        maxValue : 60
+        millisPerPixel : 20
+
+
       });
-    chart.streamTo(canvas, 1000 /* some time delay */);
+    chart.streamTo(canvas, 500 /* some time delay */);
 
 
     //get mqtt configuration from server
