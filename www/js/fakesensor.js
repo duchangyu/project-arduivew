@@ -66,11 +66,9 @@ $(function () {
       });
 
       var autoRandomTestValue ;
+      function startSimulateRandomTemp( baseTemp, around, interval){
 
-      $('#btnSubmitRandom').click(function(event) {
-        /* Act on the event */
-
-        function getRandom(min, max) {
+         function getRandom(min, max) {
           return Math.random() * (max - min) + min;
         }
 
@@ -83,13 +81,27 @@ $(function () {
 
        autoRandomTestValue = setInterval(function(){
 
-         var temp = getRandomInt(15, 35).toString(); 
+         var temp = getRandomInt(baseTemp - around, baseTemp + around).toString(); 
 
           message = new Paho.MQTT.Message(temp);
           message.destinationName = mqttconfig.topic;
           client.send(message);
 
-        }, 1000);
+        }, interval);
+
+      }
+
+      function stopSimulateRandomTemp(){
+
+        clearInterval(autoRandomTestValue);
+
+      }
+
+      $('#btnSubmitRandom').click(function(event) {
+        /* Act on the event */
+
+      // simulate temp at 25 +/ 5 for every 1000 ms
+       startSimulateRandomTemp(25, 5, 1000);
 
        
         
@@ -99,12 +111,33 @@ $(function () {
       $('#btnClearRandom').click(function(event) {
         /* Act on the event */
 
-        clearInterval(autoRandomTestValue);
+        stopSimulateRandomTemp();
  
+      });
+
+
+
+
+      $('#btnSimAlertSubmit').click(function(event) {
+
+        // simulate temp at 50 +/ 5 for every 100 ms
+        startSimulateRandomTemp(50, 5, 100);
+
+
       });
       
 
-      
+      $('#btnSimAlertStop').click(function(event) {
+
+        //stop sending high values
+        stopSimulateRandomTemp();
+
+        //send a normal value to stop alert
+        var message = new Paho.MQTT.Message('25');
+          message.destinationName = mqttconfig.topic;
+          client.send(message);
+        
+      });
 
 
     });

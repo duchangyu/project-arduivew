@@ -85,12 +85,25 @@
 
       <div class="panel panel-default">
         <div class="panel-body">
-            <label for="temperature" class="col-sm-2">temperature : </label> <label id="testSign" class="hide"> Using testing data</label>
+            <label for="temperature" class="col-sm-2">temperature(℃) : </label> <label id="testSign" class="hide"> Using testing data</label>
             <input type="number" name="temperature" id="inputTemperature" class="form-control" value="26" min="{5"} max="100" step="5" required="required" title="Temperature"> 
+            
+            <div class="btn-group">
             <button id="btnSubmit" type="submit" class="btn btn-primary">Set Temperature</button>
-            <button id="btnSubmitRandom" type="submit" class="btn btn-warning">Set Random Test Temperature (15 ~ 35)</button>
-            <button id="btnClearRandom" type="submit" class="btn btn-success">Clear Random Temperature </button>
+           </div>
 
+
+            <div class="btn-group">
+              <button id="btnSimAlertSubmit" type="submit" class="btn btn-danger">Simulate High Temperature(around 50 ) </button>
+              <button id="btnSimAlertStop" type="submit" class="btn btn-success">Stop High Temperature </button>
+
+            </div>
+
+            
+            <div class="btn-group">
+              <button id="btnSubmitRandom" type="submit" class="btn btn-warning">Set Random Test Temperature (15 ~ 35)</button>
+              <button id="btnClearRandom" type="submit" class="btn btn-success">Clear Random Temperature </button>
+            </div>
         </div>
       </div>
         
