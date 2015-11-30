@@ -100,8 +100,9 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
     var chart = new SmoothieChart(
       {grid : {fillStyle : 'rgba(0,0,0,0.52)', verticalSections : 4, millisPerLine : 1000},
       timestampFormatter:SmoothieChart.timeFormatter,
-      minValue : 0,
-      maxValue : 45
+
+      minValue : 15,
+      maxValue : 35
     });
 
     var canvas = document.getElementById('smoothie-chart');
@@ -111,8 +112,7 @@ Autodesk.ADN.Viewing.Extension.GenericDockingPanel = function (viewer, options) 
       series, 
       { lineWidth:2,
         strokeStyle:'#00ff00',
-        fillStyle:'rgba(198,181,78,0.30)',
-        millisPerPixel : 20
+        fillStyle:'rgba(198,181,78,0.30)'
 
 
       });

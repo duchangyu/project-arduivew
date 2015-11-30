@@ -14,9 +14,9 @@
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 // cannot be longer than 32 characters!
-#define WLAN_SSID       "HUAWEI-DevTech"
+#define WLAN_SSID       "242"
 // For connecting router or AP, don't forget to set the SSID and password here!!
-#define WLAN_PASS       "Autodesk123"
+#define WLAN_PASS       "4659875admin"
 
 
 /************************* mqtt server setup *********************************/
