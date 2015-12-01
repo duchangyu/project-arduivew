@@ -2,6 +2,10 @@
   "name": "AdnViewerBasic",
   "description": "A basic node.js server sample",
   "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "test" : "protractor tests/e2e-conf.js" 
+  },
   "dependencies": {
     "body-parser": "^1.14.1",
     "express": ">= 4.12.3",
@@ -22,11 +26,11 @@
     "Cyrille Fauvel <cyrille@autodesk.com>"
   ],
   "license": "MIT",
-  "scripts": {
-    "start": "node server.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Developer-Autodesk/workflow-node.js-view.and.data.api.git"
+  },
+  "devDependencies": {
+    "protractor": "^3.0.0"
   }
 }
