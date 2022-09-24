@@ -13,6 +13,8 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
     _self.load = function() {
 
         console.log('Autodesk.ADN.Viewing.Extension.Color loaded');
+        return true;
+    }
         ///////////////////////////////////////////////////////////////////////////
         // Generate GUID
         //
@@ -119,7 +121,6 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
             console.log('Autodesk.ADN.Viewing.Extension.Color unloaded');
             return true;
         };
-    };
 };
 Autodesk.ADN.Viewing.Extension.Color.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
 Autodesk.ADN.Viewing.Extension.Color.prototype.constructor = Autodesk.ADN.Viewing.Extension.Color;
